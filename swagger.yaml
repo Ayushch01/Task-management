@@ -1,0 +1,1267 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Task Management Api
+  description: API documentation for Lex-Edu Application
+servers:
+  - url: http://localhost:8008
+    description: Server running on local machine with valid .env
+  - url: http://localhost:8008
+    description: Server running on local machine without valid .env
+components:
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /admin/register:
+    post:
+      tags:
+        - Admin Routes
+      summary: Register an admin
+      description: Register a new admin by providing necessary details.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the admin.
+                  example: John Doe
+                userName:
+                  type: string
+                  description: Username for the admin.
+                  example: johndoe123
+                email:
+                  type: string
+                  format: email
+                  description: Email address of the admin.
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  description: Password for the admin.
+                  example: SecurePassword123!
+                managerLoginId:
+                  type: string
+                  description: Login ID of the manager.
+                  example: manager001
+                managerLoginPassword:
+                  type: string
+                  description: Password of the manager.
+                  example: ManagerSecurePassword!
+              required:
+                - name
+                - userName
+                - email
+                - password
+                - managerLoginId
+                - managerLoginPassword
+      responses:
+        200:
+          description: Admin registered successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Admin Registered Successfully
+                  token:
+                    type: string
+                    description: Authentication token for the registered admin.
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: Database connection failed.
+
+  /admin/login:
+    post:
+      tags:
+        - Admin Routes
+      summary: Login an admin
+      description: Authenticate an admin using their username or email and password.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userName:
+                  type: string
+                  description: Username or email of the admin.
+                  example: johndoe123
+                password:
+                  type: string
+                  description: Password for the admin account.
+                  example: SecurePassword123!
+              required:
+                - userName
+                - password
+      responses:
+        200:
+          description: Admin logged in successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Logged In Successfully
+                  token:
+                    type: string
+                    description: Authentication token for the logged-in admin.
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        400:
+          description: Invalid credentials provided.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Invalid credentials
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: Database connection failed.
+
+  /admin/manager:
+    post:
+      tags:
+        - Admin Routes
+      summary: Register a manager
+      description: Register a manager by providing necessary details. Manager credentials will be sent to their email.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the manager.
+                  example: Jane Doe
+                userName:
+                  type: string
+                  description: Username or email for the manager.
+                  example: janedoe123
+                email:
+                  type: string
+                  format: email
+                  description: Email address of the manager.
+                  example: janedoe@example.com
+              required:
+                - name
+                - userName
+                - email
+      responses:
+        200:
+          description: Manager registered successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Manager credentials are sent to their email
+        400:
+          description: Invalid credentials provided.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Invalid credentials
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: Database connection failed.
+      security:
+        - Bearer: []
+      
+  /admin:
+    get:
+      tags:
+        - Admin Routes
+      summary: Get Admin Profile
+      description: Retrieve the profile details of the logged-in admin.
+      responses:
+        200:
+          description: Successfully retrieved admin profile.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Admin Detail
+                  data:
+                    type: object
+                    description: The admin profile details.
+                    example:
+                      id: 1
+                      name: "Admin Name"
+                      email: "admin@example.com"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: "Unexpected error occurred while retrieving the admin profile."
+      security:
+        - Bearer: []
+
+  /admin/logout:
+    post:
+      tags:
+        - Admin Routes
+      summary: Logout Admin
+      description: Logs out the currently authenticated admin.
+      responses:
+        200:
+          description: Successfully logged out.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Logged out successfully"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: "Unexpected error occurred during logout."
+      security:
+        - Bearer: []
+
+  /manager/login:
+    post:
+      tags:
+        - Manager Routes
+      summary: Login a manager
+      description: Authenticate a manager using their email, login ID, and login password.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Email address of the manager.
+                  example: manager@example.com
+                loginId:
+                  type: string
+                  description: Login ID of the manager.
+                  example: manager001
+                loginPassword:
+                  type: string
+                  description: Password for the manager's account.
+                  example: ManagerSecurePassword!
+              required:
+                - email
+                - loginId
+                - loginPassword
+      responses:
+        200:
+          description: Manager logged in successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: LoggedIn Successfully
+                  data:
+                    type: object
+                    description: Additional login details.
+                    example:
+                      id: "12345"
+                      role: "manager"
+                      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        400:
+          description: Invalid credentials provided.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Invalid credentials
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: Unexpected error occurred
+
+  /manager/register:
+    post:
+      tags:
+        - Manager Routes
+      summary: Register a user under a manager
+      description: Register a user by providing the required details. A confirmation email will be sent to the user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Full name of the user.
+                  example: John Doe
+                email:
+                  type: string
+                  format: email
+                  description: Email address of the user.
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  description: Password for the user's account.
+                  example: StrongPassword123
+                userName:
+                  type: string
+                  description: Username for the user.
+                  example: johndoe123
+              required:
+                - name
+                - email
+                - password
+                - userName
+      responses:
+        200:
+          description: User registered successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: User Registered Successfully and Email sent to them
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: Unexpected error occurred during registration.
+      security:
+        - Bearer: []
+
+  /manager/task:
+    post:
+      tags:
+        - Manager Routes
+      summary: Create a task under a manager
+      description: Create a new task by providing the required details such as title, description, due date, and priority.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Title of the task.
+                  example: Complete project documentation
+                description:
+                  type: string
+                  description: Detailed description of the task.
+                  example: Ensure that all project documentation is completed and submitted by the due date.
+                dueDate:
+                  type: string
+                  description: Due date for the task in ISO format.
+                  example: 2024-12-31T23:59:59Z
+                priority:
+                  type: string
+                  description: Priority level of the task (e.g., High, Medium, Low).
+                  example: High
+              required:
+                - title
+                - description
+                - dueDate
+                - priority
+      security:
+        - Bearer: []
+
+      responses:
+        200:
+          description: Task created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Task Created Successfully
+                  taskId:
+                    type: string
+                    description: The unique identifier of the created task.
+                    example: "12345"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: Unexpected error occurred during task creation.
+
+  /manager/get-task:
+    post:
+      tags:
+        - Manager Routes
+      summary: Retrieve all tasks under a manager with filters
+      description: Fetch all tasks under a manager, optionally filtered by due date, status, priority, and other parameters.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dueDate:
+                  type: string
+                  description: Filter tasks by a specific due date in ISO format.
+                  example: 2024-12-31T23:59:59Z
+                isDeleted:
+                  type: boolean
+                  description: Filter tasks by their deletion status.
+                  example: false
+                status:
+                  type: string
+                  description: Filter tasks by status (e.g., "completed", "pending").
+                  example: pending
+                priority:
+                  type: string
+                  description: Filter tasks by priority level.
+                  example: High
+                greaterThenDate:
+                  type: string
+                  description: Filter tasks with a due date greater than the specified date.
+                  example: 2024-12-01T00:00:00Z
+                lessThenDate:
+                  type: string
+                  description: Filter tasks with a due date less than the specified date.
+                  example: 2024-12-31T23:59:59Z
+      responses:
+        200:
+          description: Successfully retrieved all tasks.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: All Tasks
+                  data:
+                    type: array
+                    description: List of tasks.
+                    items:
+                      type: object
+                      properties:
+                        taskId:
+                          type: string
+                          description: Unique identifier for the task.
+                          example: "12345"
+                        title:
+                          type: string
+                          description: Title of the task.
+                          example: Complete project documentation
+                        description:
+                          type: string
+                          description: Detailed description of the task.
+                          example: Ensure all project documentation is completed.
+                        dueDate:
+                          type: string
+                          format: date-time
+                          description: Due date of the task.
+                          example: 2024-12-31T23:59:59Z
+                        priority:
+                          type: string
+                          description: Priority level of the task.
+                          example: High
+                        status:
+                          type: string
+                          description: Current status of the task.
+                          example: Pending
+                        isDeleted:
+                          type: boolean
+                          description: Whether the task has been deleted.
+                          example: false
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: Unexpected error occurred while retrieving tasks.
+      security:
+        - Bearer: []
+
+  /manager/assign:
+    post:
+      tags:
+        - Manager Routes
+      summary: Assign tasks to employees under a manager
+      description: Assign one or more tasks to employees by providing task details, including task ID and employee ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                taskDetails:
+                  type: array
+                  description: List of task assignments, each containing task ID and employee ID.
+                  items:
+                    type: object
+                    properties:
+                      taskId:
+                        type: integer
+                        description: The ID of the task to be assigned.
+                        example: 101
+                      employeeId:
+                        type: integer
+                        description: The ID of the employee to whom the task is assigned.
+                        example: 202
+                  minItems: 1
+              required:
+                - taskDetails
+      responses:
+        200:
+          description: Tasks assigned successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Task Assigned Successfully
+                  data:
+                    type: object
+                    description: Information about the assigned task.
+                    properties:
+                      assignedTask:
+                        type: array
+                        description: Details of the assigned tasks.
+                        items:
+                          type: object
+                          properties:
+                            taskId:
+                              type: integer
+                              description: The ID of the assigned task.
+                              example: 101
+                            employeeId:
+                              type: integer
+                              description: The ID of the assigned employee.
+                              example: 202
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: Unexpected error occurred while assigning tasks.
+      security:
+        - Bearer: []
+
+  /manager/review/{taskId}:
+    post:
+      tags:
+        - Manager Routes
+      summary: Review Task and Change Status
+      description: Reviews a task and updates its status.
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: string
+            pattern: "^[0-9]+$"
+            example: "123"
+          description: "The ID of the task to review."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                assignedTo:
+                  type: string
+                  description: "The person to whom the task is assigned."
+                  example: "John Doe"
+                status:
+                  type: string
+                  description: "The new status of the task."
+                  example: "Completed"
+              required:
+                - assignedTo
+                - status
+      responses:
+        200:
+          description: Task reviewed and status updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Task status changed to Completed"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: "Unexpected error occurred while reviewing the task."
+      security:
+        - Bearer: []
+
+  /manager:
+    get:
+      tags:
+        - Manager Routes
+      summary: Get Manager Profile
+      description: Retrieves the profile details of the logged-in manager.
+      responses:
+        200:
+          description: Successfully retrieved the manager profile.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Manager Profile"
+                  data:
+                    type: object
+                    description: "The manager's profile data."
+                    example:
+                      name: "John Doe"
+                      email: "manager@example.com"
+                      role: "Manager"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: "Unexpected error occurred while retrieving the profile."
+      security:
+        - Bearer: []
+       
+  /manager/get-task/{taskId}:
+    get:
+      tags:
+        - Manager Routes
+      summary: Retrieve a specific task by its ID
+      description: Fetch a task under a manager using its unique task ID.
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the task.
+          example: "12345"
+      responses:
+        200:
+          description: Successfully retrieved the task.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Get Task
+                  data:
+                    type: object
+                    description: Task details.
+                    properties:
+                      taskId:
+                        type: string
+                        description: Unique identifier for the task.
+                        example: "12345"
+                      title:
+                        type: string
+                        description: Title of the task.
+                        example: Complete project documentation
+                      description:
+                        type: string
+                        description: Detailed description of the task.
+                        example: Ensure all project documentation is completed.
+                      dueDate:
+                        type: string
+                        format: date-time
+                        description: Due date of the task.
+                        example: 2024-12-31T23:59:59Z
+                      priority:
+                        type: string
+                        description: Priority level of the task.
+                        example: High
+                      status:
+                        type: string
+                        description: Current status of the task.
+                        example: Pending
+                      isDeleted:
+                        type: boolean
+                        description: Whether the task has been deleted.
+                        example: false
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: Unexpected error occurred while retrieving the task.
+      security:
+        - Bearer: []
+
+  /manager/update-task/{taskId}:
+    patch:
+      tags:
+        - Manager Routes
+      summary: Update an existing task by its ID
+      description: Modify task details such as title, description, due date, priority, and status.
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the task.
+          example: "12345"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Title of the task.
+                  example: "Updated Task Title"
+                description:
+                  type: string
+                  description: Description of the task.
+                  example: "Updated task description"
+                dueDate:
+                  type: string
+                  format: date-time
+                  description: Due date of the task.
+                  example: "2024-12-31T23:59:59Z"
+                priority:
+                  type: string
+                  description: Priority level of the task.
+                  example: "Medium"
+                status:
+                  type: string
+                  description: Current status of the task.
+                  example: "In Progress"
+      responses:
+        200:
+          description: Task successfully updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Task Updated Successfully
+                  data:
+                    type: object
+                    description: The updated task details.
+                    properties:
+                      taskId:
+                        type: string
+                        description: Unique identifier for the task.
+                        example: "12345"
+                      title:
+                        type: string
+                        description: Updated title of the task.
+                        example: "Updated Task Title"
+                      description:
+                        type: string
+                        description: Updated description of the task.
+                        example: "Updated task description"
+                      dueDate:
+                        type: string
+                        format: date-time
+                        description: Updated due date of the task.
+                        example: "2024-12-31T23:59:59Z"
+                      priority:
+                        type: string
+                        description: Updated priority level of the task.
+                        example: "Medium"
+                      status:
+                        type: string
+                        description: Updated status of the task.
+                        example: "In Progress"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: Unexpected error occurred while updating the task.
+      security:
+        - Bearer: []
+
+  /manager/delete-task/{taskId}:
+    delete:
+      tags:
+        - Manager Routes
+      summary: Delete a task by its ID
+      description: Remove a task from the system using its unique task ID.
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the task to delete.
+          example: "12345"
+      responses:
+        200:
+          description: Task successfully deleted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Task deleted Successfully
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: "Unexpected error occurred while deleting the task."
+      security:
+        - Bearer: []
+
+  /user/login:
+    post:
+      tags:
+        - User Routes
+      summary: User Login
+      description: Authenticates a user and provides an authorization token upon successful login.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userName:
+                  type: string
+                  description: The username of the user.
+                  example: "john_doe"
+                password:
+                  type: string
+                  description: The password of the user.
+                  example: "secure_password"
+              required:
+                - userName
+                - password
+      responses:
+        200:
+          description: Successfully logged in the user.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "User loggedIn Successfully"
+                  token:
+                    type: string
+                    description: The authorization token for the user.
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: "Unexpected error occurred while logging in."
+      
+  /user/assigned-tasks:
+    get:
+      tags:
+        - User Routes
+      summary: Get All Assigned Tasks
+      description: Retrieves a list of all tasks assigned to employees.
+      responses:
+        200:
+          description: Successfully retrieved all assigned tasks.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "All assigned task"
+                  data:
+                    type: array
+                    description: List of assigned tasks.
+                    items:
+                      type: object
+                      properties:
+                        taskId:
+                          type: string
+                          example: "12345"
+                        assignedTo:
+                          type: string
+                          example: "John Doe"
+                        status:
+                          type: string
+                          example: "In Progress"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: "Unexpected error occurred while fetching assigned tasks."
+      security:
+        - Bearer: []
+      
+  /user/task-status/{assignedId}:
+    patch:
+      tags:
+        - User Routes
+      summary: Update Task Status
+      description: Updates the status of a specific assigned task.
+      parameters:
+        - name: assignedId
+          in: path
+          required: true
+          description: The ID of the assigned task to update.
+          schema:
+            type: string
+            example: "12345"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Task update details (optional for future extensibility).
+      responses:
+        200:
+          description: Successfully updated the task status.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "All assigned task"
+                  data:
+                    type: object
+                    description: Details of the updated task.
+                    example: 
+                      assignedId: "12345"
+                      status: "Completed"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: "Unexpected error occurred while updating the task status." 
+      security:
+        - Bearer: []
+      
+  /user/task:
+    get:
+      tags:
+        - User Routes
+      summary: Get All Completed Tasks
+      description: Retrieves all tasks that have been completed.
+      responses:
+        200:
+          description: Successfully retrieved all completed tasks.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "All Completed task"
+                  data:
+                    type: array
+                    description: A list of all completed tasks.
+                    items:
+                      type: object
+                      properties:
+                        taskId:
+                          type: string
+                          example: "12345"
+                        title:
+                          type: string
+                          example: "Complete the report"
+                        status:
+                          type: string
+                          example: "Completed"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    description: Error message explaining the failure.
+                    example: "Unexpected error occurred while fetching completed tasks."
+      security:
+        - Bearer: []
+      
